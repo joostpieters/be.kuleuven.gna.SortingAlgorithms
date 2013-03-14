@@ -90,7 +90,16 @@ public class SortingAlgorithms {
      *         the algorithm, while the second element is the number of data moves.
      */
     public <T extends Comparable<T>> int[] kWayMergeSort(T[] array, int k) {
-        throw new RuntimeException("not implemented");
+        int[] count = new int[2];
+        T[] aux = (T[]) new Comparable[array.length];
+
+        if (k <= array.length) {
+            count = kWayMergeSort(array, 0, array.length, aux, k);
+        } else {
+            count[0] = quickSort(array);
+            count[1] = 0;
+        }
+        return count;
     }
 
     private boolean less(Comparable v, Comparable w) {
@@ -169,5 +178,80 @@ public class SortingAlgorithms {
         }
         exch(a, lo, j);
         return j;
+    }
+
+    private <T extends Comparable<T>> int[] kWayMergeSort(
+            Comparable<T>[] array, int lo, int hi, Comparable<T>[] aux, int k) {
+        int[] count = new int[2], indices;
+        count[0] = count[1] = 0;
+        int difference = hi - lo, interval = difference/k;
+
+        if (hi - 1 <= lo) {
+            return count;
+        }
+        if (difference >= k) {
+            indices = new int[k+1];
+            indices[0] = lo;
+            indices[k] = hi;
+            for (int i = 1; i < k; i++) {
+                indices[i] = indices[i-1] + interval;
+            }
+        } else {
+            indices = new int[difference+1];
+            indices[0] = lo;
+            indices[difference] = hi;
+            for (int i = 1; i < indices.length-1; i++) {
+                indices[i] = indices[i-1] + 1;
+            }
+        }
+        for (int i = 0; i <indices.length-1; i++) {
+            int[] temp = kWayMergeSort(array, indices[i], indices[i+1], aux, k);
+            count[0] += temp[0];
+            count[1] += temp[1];
+        }
+        int[] temp = kWayMerge(array,indices,aux);
+        count[0] += temp[0];
+        count[1] += temp[1];
+
+        return count;
+
+    }
+
+    private <T extends Comparable<T>> int[] kWayMerge(
+            Comparable<T>[] array, int[] indices, Comparable<T>[] aux) {
+        int[] count = new int[2];
+        for (int i = 0; i < indices.length-2; i++) {
+            int[] temp = iterativeMerge(array, indices[0], indices[i+1]-1, indices[i+2]-1, aux);
+            count[0] += temp[0];
+            count[1] += temp[1];
+        }
+        return count;
+    }
+
+    private <T extends Comparable<T>> int[] iterativeMerge(
+            Comparable<T>[] array, int lo, int mid, int hi, Comparable<T>[] aux) {
+        int[] count = new int[2];
+        int i = lo, j = mid+1;
+        for (int k = lo; k <= hi; k++) {
+            aux[k] = array[k];
+        }
+        for (int k = lo; k <= hi; k++) {
+            if (i > mid) {
+                array[k] = aux[j++];
+                count[1]++;
+            } else if (j > hi) {
+                array[k] = aux[i++];
+                count[1]++;
+            } else {
+                if (less(aux[j], aux[i])) {
+                    array[k] = aux[j++];
+                } else {
+                    array[k] = aux[i++];
+                }
+                count[0]++;
+                count[1]++;
+            }
+        }
+        return count;
     }
 }
