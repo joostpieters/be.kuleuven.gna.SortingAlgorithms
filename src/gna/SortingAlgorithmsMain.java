@@ -1,42 +1,71 @@
 package gna;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class SortingAlgorithmsMain {
     public static void main(String[] args) {
         SortingAlgorithms algorithms = new SortingAlgorithms();
-        Integer[] array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        int nbCompares;
+        //testSortingAlgorithms(algorithms);
+        doublingRatioExperiment(algorithms);
+    }
 
-        System.out.println("********** SELECTION SORT **********");
-        array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        System.out.println("input:  " + Arrays.toString(array));
-        nbCompares = algorithms.selectionSort(array);
-        System.out.println("output: " + Arrays.toString(array) + " with " + nbCompares + " comparisons");
+    private static void doublingRatioExperiment(SortingAlgorithms algorithms) {
+        int i = 100;
+        while (i <= 6400) {
+            Integer[] array = getRandomIntegers(i);
+            System.out.println("-[N = " + i + "]-");
 
-        System.out.println("********** INSERTION SORT **********");
-        array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        System.out.println("input:  " + Arrays.toString(array));
-        nbCompares = algorithms.insertionSort(array);
-        System.out.println("output: " + Arrays.toString(array) + " with " + nbCompares + " comparisons");
+            long start = System.currentTimeMillis();
+            quickSort(algorithms, array);
+            long end = System.currentTimeMillis();
+            System.out.println(end-start);
+            i = i * 2;
+        }
+    }
 
-        System.out.println("********** MERGE SORT **********");
-        array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        System.out.println("input:  " + Arrays.toString(array));
-        nbCompares = algorithms.mergeSort(array);
-        System.out.println("output: " + Arrays.toString(array) + " with " + nbCompares + " comparisons");
+    private static void testSortingAlgorithms(SortingAlgorithms algorithms) {
+        for (int i = 0; i < 100; i++) {
+            Integer[] array = getRandomIntegers(i);
+            System.out.println("-[N = " + i + "]-");
 
-        System.out.println("********** QUICK SORT **********");
-        array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        System.out.println("input:  " + Arrays.toString(array));
-        nbCompares = algorithms.quickSort(array);
-        System.out.println("output: " + Arrays.toString(array) + " with " + nbCompares + " comparisons");
+            selectionSort(algorithms, array);
+            insertionSort(algorithms, array);
+            mergeSort(algorithms, array);
+            quickSort(algorithms, array);
+            kWayMergeSort(algorithms, array, 3);
+        }
+    }
 
-        System.out.println("********** 3-WAY MERGE SORT **********");
-        array = new Integer[]{8, 5, 6, 3, 1, 9, 0, 7, 4, 2};
-        System.out.println("input:  " + Arrays.toString(array));
-        int[] comparesAndMoves = algorithms.kWayMergeSort(array, 3);
-        System.out.println("output: " + Arrays.toString(array) + " with " + comparesAndMoves[0] + " comparisons and " + comparesAndMoves[1] + " moves");
+    private static void kWayMergeSort(SortingAlgorithms algorithms, Integer[] array, int k) {
+        int[] comparesAndMoves = algorithms.kWayMergeSort(array, k);
+        System.out.println(comparesAndMoves[0] + " ; " + comparesAndMoves[1]);
+    }
+
+    private static void quickSort(SortingAlgorithms algorithms, Integer[] array) {
+        System.out.println(algorithms.quickSort(array));
+    }
+
+    private static void mergeSort(SortingAlgorithms algorithms, Integer[] array) {
+        System.out.println(algorithms.mergeSort(array));
+    }
+
+    private static void insertionSort(SortingAlgorithms algorithms, Integer[] array) {
+        System.out.println(algorithms.insertionSort(array));
+    }
+
+    private static void selectionSort(SortingAlgorithms algorithms, Integer[] array) {
+        System.out.println(algorithms.selectionSort(array));
+    }
+
+    private static Integer[] getRandomIntegers(int number) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < number; i++) {
+            list.add(i);
+        }
+        java.util.Collections.shuffle(list);
+        Integer[] array = new Integer[list.size()];
+        array = list.toArray(array);
+        return array;
     }
 }
 
